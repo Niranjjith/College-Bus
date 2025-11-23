@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost & Found | Nilgiri College Transport Office</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --blue-900:#0b3d91;
+      --blue-700:#1565d8;
+      --blue-400:#58a0ff;
+      --white:#fff;
+      --muted:#444;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:Inter,system-ui,sans-serif;
+      background:#f6f9ff;
+      color:#1b1b1b;
+    }
+
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:20px 10%;
+      background:linear-gradient(90deg,var(--blue-900),var(--blue-700));
+      color:var(--white);
+    }
+
+    .logo img{
+      height:40px;
+      background:#fff;
+      border-radius:8px;
+      padding:6px 12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    nav a{
+      margin:0 14px;
+      color:var(--white);
+      text-decoration:none;
+      font-weight:500;
+      position:relative;
+    }
+    nav a::after{
+      content:'';
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:0;height:2px;
+      background:var(--blue-400);
+      transition:width .3s;
+    }
+    nav a:hover::after{width:100%}
+
+    .container{padding:60px 10%;text-align:center;}
+
+    h1{
+      font-family:'Playfair Display',serif;
+      font-size:40px;
+      color:var(--blue-900);
+      margin-bottom:10px;
+    }
+    p{color:#555;font-size:16px;margin-bottom:30px;}
+
+    /* Search box */
+    .search-box{
+      position:relative;
+      margin:auto;
+      max-width:500px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      margin-bottom:30px;
+    }
+    .search-box input{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:15px;
+      outline:none;
+    }
+
+    .suggestions{
+      position:absolute;
+      top:48px;width:100%;
+      background:var(--white);
+      border:1px solid #ccc;
+      border-radius:8px;
+      max-height:180px;overflow-y:auto;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      display:none;z-index:10;
+    }
+    .suggestions div{
+      padding:10px 14px;
+      cursor:pointer;
+      transition:background 0.2s ease;
+    }
+    .suggestions div:hover{background:#e8f0ff;}
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:var(--white);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(0,0,0,0.1);
+      margin-bottom:50px;
+    }
+    thead{
+      background:linear-gradient(90deg,var(--blue-900),var(--blue-700));
+      color:var(--white);
+    }
+    th,td{padding:14px 16px;text-align:left;}
+    tbody tr:nth-child(even){background:#f0f6ff;}
+    tbody tr:hover{background:#e5eeff;transition:0.2s ease;}
+
+    /* Form */
+    form{
+      background:rgba(255,255,255,0.95);
+      padding:30px;
+      border-radius:16px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.1);
+      max-width:600px;
+      margin:auto;
+      text-align:left;
+    }
+    form h2{
+      color:var(--blue-900);
+      font-size:26px;
+      margin-bottom:18px;
+      text-align:center;
+    }
+    input,select,textarea{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:15px;
+      margin-bottom:16px;
+      background:#fff;
+    }
+    textarea{resize:none;min-height:100px;}
+    button{
+      background:linear-gradient(90deg,var(--blue-700),var(--blue-400));
+      color:#fff;
+      padding:12px 20px;
+      border:none;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      width:100%;
+      transition:transform .2s ease;
+    }
+    button:hover{transform:scale(1.03);}
+    footer{
+      text-align:center;
+      padding:30px 10%;
+      margin-top:80px;
+      background:linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.25));
+      color:rgba(255,255,255,0.8);
+      font-size:14px;
+      border-top:1px solid rgba(255,255,255,0.1);
+    }
+
+    @media(max-width:700px){
+      th,td{font-size:14px;padding:10px;}
+      h1{font-size:30px;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="https://nilgiricollege.ac.in/images/logo-ncas-auto.png" alt="Nilgiri College Logo">
+    </div>
+    <nav>
+      <a href="landing page.html">Home</a>
+      <a href="helpdesk.html">Helpdesk</a>
+      <a href="fees.html">Fees</a>
+      <a href="lostfound.html">Lost & Found</a>
+    </nav>
+  </header>
+
+  <section class="container">
+    <h1>Lost & Found</h1>
+    <p>Search for items lost or found on buses and campus areas, or report a new one below.</p>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search item or location...">
+      <div class="suggestions" id="suggestionsBox"></div>
+    </div>
+
+    <table id="lostTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Location</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Reported By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Water Bottle</td><td>Kolapally Bus</td><td>02-Nov-2025</td><td>Lost</td><td>Rahul P</td></tr>
+        <tr><td>Umbrella</td><td>Kalpetta Stop</td><td>01-Nov-2025</td><td>Found</td><td>Office</td></tr>
+        <tr><td>ID Card</td><td>Kuppadi Bus</td><td>30-Oct-2025</td><td>Lost</td><td>Anju M</td></tr>
+        <tr><td>Notebook</td><td>Panamaram Bus</td><td>28-Oct-2025</td><td>Found</td><td>Driver Rajesh</td></tr>
+        <tr><td>Earphones</td><td>Kambalakkad</td><td>27-Oct-2025</td><td>Lost</td><td>Niyas V</td></tr>
+      </tbody>
+    </table>
+
+    <form>
+      <h2>Report Lost / Found Item</h2>
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Email Address" required>
+      <select required>
+        <option value="">Select Status</option>
+        <option>Lost</option>
+        <option>Found</option>
+      </select>
+      <input type="text" placeholder="Item Name" required>
+      <input type="text" placeholder="Location (Bus or Area)" required>
+      <textarea placeholder="Additional details..."></textarea>
+      <button type="submit">Submit Report</button>
+    </form>
+  </section>
+
+  <footer>
+    © 2025 Nilgiri College Transport Office • All rights reserved
+  </footer>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('lostTable');
+    const rows = table.getElementsByTagName('tr');
+    const suggestionsBox = document.getElementById('suggestionsBox');
+
+    const items = Array.from(table.querySelectorAll("tbody tr td:first-child, tbody tr td:nth-child(2)"))
+                    .map(td => td.textContent.trim());
+    const uniqueItems = [...new Set(items)];
+
+    searchInput.addEventListener('input', function() {
+      const value = this.value.toLowerCase();
+      suggestionsBox.innerHTML = '';
+      if(value === ''){
+        suggestionsBox.style.display = 'none';
+        filterTable('');
+        return;
+      }
+      const matches = uniqueItems.filter(i => i.toLowerCase().startsWith(value));
+      if(matches.length > 0){
+        suggestionsBox.style.display = 'block';
+        matches.forEach(match => {
+          const div = document.createElement('div');
+          div.textContent = match;
+          div.onclick = () => {
+            searchInput.value = match;
+            suggestionsBox.style.display = 'none';
+            filterTable(match);
+          };
+          suggestionsBox.appendChild(div);
+        });
+      } else suggestionsBox.style.display = 'none';
+      filterTable(value);
+    });
+
+    document.addEventListener('click', (e)=>{
+      if(!suggestionsBox.contains(e.target) && e.target!==searchInput){
+        suggestionsBox.style.display='none';
+      }
+    });
+
+    function filterTable(filterValue){
+      const filter = filterValue.toLowerCase();
+      for (let i=1;i<rows.length;i++){
+        let text = rows[i].textContent.toLowerCase();
+        rows[i].style.display = text.includes(filter)?'':'none';
+      }
+    }
+  </script>
+</body>
+</html>

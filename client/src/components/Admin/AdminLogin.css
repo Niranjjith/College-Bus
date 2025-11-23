@@ -1,0 +1,85 @@
+.admin-login-page {
+  background: linear-gradient(180deg, var(--blue-900), #041835);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-box h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+
+.login-box p {
+  color: var(--muted);
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.error-message {
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.5);
+  color: #f44336;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.login-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-box input {
+  padding: 12px 14px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+}
+
+.login-box input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.login-box button {
+  background: linear-gradient(90deg, var(--blue-700), var(--blue-400));
+  color: var(--white);
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  font-size: 16px;
+}
+
+.login-box button:hover {
+  transform: scale(1.05);
+}
+

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nilgiri College Transport Office</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --blue-900:#0b3d91;
+      --blue-700:#1565d8;
+      --blue-400:#58a0ff;
+      --white:#fff;
+      --muted:rgba(255,255,255,0.85);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:Inter,system-ui,sans-serif;
+      background:linear-gradient(180deg,var(--blue-900),#041835);
+      color:var(--white);
+      overflow-x:hidden;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:24px 10%;
+    }
+    .logo img{
+      height:40px;
+      background:#fff;
+      border-radius:8px;
+      padding:6px 12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    }
+    nav a{
+      margin:0 14px;
+      color:var(--white);
+      text-decoration:none;
+      font-weight:500;
+      position:relative;
+    }
+    nav a::after{
+      content:'';
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:0;
+      height:2px;
+      background:var(--blue-400);
+      transition:width .3s;
+    }
+    nav a:hover::after{width:100%}
+
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:80px 10%;
+      gap:40px;
+    }
+    .hero-text{max-width:520px}
+    .hero-text h1{
+      font-size:48px;
+      line-height:1.2;
+      font-family:'Playfair Display',serif;
+      margin-bottom:20px;
+    }
+    .hero-text p{
+      font-size:16px;
+      color:var(--muted);
+      margin-bottom:24px;
+    }
+    .btn{
+      padding:14px 22px;
+      border-radius:12px;
+      border:none;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow:0 8px 22px rgba(0,0,0,0.25);
+      text-decoration:none;
+      display:inline-block;
+    }
+    .btn.primary{
+      background:linear-gradient(90deg,var(--blue-700),var(--blue-400));
+      color:var(--white);
+    }
+    .btn.secondary{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.2);
+      color:var(--white);
+    }
+
+    .bus-scene{
+      width:420px;
+      height:220px;
+      perspective:1400px;
+      display:grid;
+      place-items:center;
+    }
+    .bus-3d{
+      width:360px;
+      height:140px;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:transform .45s cubic-bezier(.2,.9,.3,1);
+    }
+    .bus-3d:hover{transform:rotateY(-18deg) rotateX(6deg) translateY(-8px)}
+    .bus-body{
+      position:absolute;left:0;right:0;top:18px;height:100px;
+      border-radius:18px;
+      background:linear-gradient(90deg,#ffffff,#eef6ff);
+      box-shadow:0 25px 60px rgba(4,14,40,0.6);
+      display:flex;align-items:center;padding:12px 16px;
+    }
+    .windows{display:flex;gap:8px;flex:1;align-items:center}
+    .win{flex:1;height:54px;border-radius:8px;background:linear-gradient(180deg,rgba(21,101,216,0.95),rgba(88,160,255,0.85))}
+    .door{width:56px;height:68px;border-radius:8px;background:linear-gradient(180deg,#e9f2ff,#ffffff);display:flex;align-items:center;justify-content:center;color:#062a6f;font-weight:700}
+    .wheel{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #111, #0b1220);position:absolute;bottom:-28px}
+    .wheel.right{right:36px}.wheel.left{left:36px}
+    .rim{width:28px;height:28px;border-radius:50%;background:linear-gradient(180deg,#8da4c8,#5b6f8e);position:absolute;top:14px;left:14px;display:grid;place-items:center;color:#08203a;font-weight:800}
+
+    .features{
+      padding:60px 10%;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:24px;
+    }
+    .card{
+      background:rgba(255,255,255,0.08);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:0 10px 28px rgba(0,0,0,0.3);
+      transition:transform 0.3s ease,box-shadow 0.3s ease;
+    }
+    .card:hover{
+      transform:translateY(-10px) scale(1.03);
+      box-shadow:0 20px 40px rgba(0,0,0,0.45),0 0 25px rgba(88,160,255,0.4);
+    }
+    .card a{color:var(--white);text-decoration:none;font-weight:600}
+
+    footer{
+      text-align:center;
+      padding:30px 10%;
+      background:rgba(0,0,0,0.3);
+      margin-top:115px;
+      color:rgba(255,255,255,0.8);
+      font-size:14px;
+    }
+    footer a{
+      color:rgba(255,255,255,0.85);
+      text-decoration:none;
+      transition:color 0.3s ease;
+    }
+    footer a:hover{color:#fff}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="https://nilgiricollege.ac.in/images/logo-ncas-auto.png" alt="Nilgiri College Logo">
+    </div>
+    <nav>
+      <a href="landing page.html">Home</a>
+      <a href="fees.html">Fees</a>
+      <a href="helpdesk.html">Helpdesk</a>
+      <a href="lost&found.html">Lost & Found</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Nilgiri College Transport Office</h1>
+      <p>Connecting students and staff with reliable, safe and modern transport facilities. Access fee details, report issues, or manage lost and found items easily through our digital portal.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="fees.html" class="btn primary">View Fee Structure</a>
+        <a href="helpdesk.html" class="btn secondary">Helpdesk</a>
+      </div>
+    </div>
+
+    <div class="bus-scene">
+      <div class="bus-3d">
+        <div class="bus-body">
+          <div class="windows">
+            <div class="win"></div>
+            <div class="win"></div>
+            <div class="door">NCAS</div>
+          </div>
+        </div>
+        <div class="wheel left"><div class="rim">N</div></div>
+        <div class="wheel right"><div class="rim">C</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="card">
+      <h3>🚌 Fee Structure</h3>
+      <p>Check the latest bus route-wise transport fees, timings, and driver details.</p>
+      <a href="fees.html">Open Fee Structure →</a>
+    </div>
+    <div class="card">
+      <h3>💬 Helpdesk</h3>
+      <p>Need support with your transport pass or service issues? Contact our helpdesk.</p>
+      <a href="helpdesk.html">Go to Helpdesk →</a>
+    </div>
+    <div class="card">
+      <h3>🎒 Lost & Found</h3>
+      <p>Report lost or found items from buses or campus and track their status.</p>
+      <a href="lost&found.html">Open Lost & Found →</a>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Nilgiri College Transport Office • Contact: transport@nilgiri.edu • Phone: +91 12345 67890
+  </footer>
+</body>
+</html>
