@@ -262,11 +262,11 @@ async function initializeData() {
       ],
       helpdesk: [],
       lostFound: [
-        { id: 1, item: 'Water Bottle', location: 'Kolapally Bus', date: '02-Nov-2025', status: 'Lost', reportedBy: 'Rahul P' },
-        { id: 2, item: 'Umbrella', location: 'Kalpetta Stop', date: '01-Nov-2025', status: 'Found', reportedBy: 'Office' },
-        { id: 3, item: 'ID Card', location: 'Kuppadi Bus', date: '30-Oct-2025', status: 'Lost', reportedBy: 'Anju M' },
-        { id: 4, item: 'Notebook', location: 'Panamaram Bus', date: '28-Oct-2025', status: 'Found', reportedBy: 'Driver Rajesh' },
-        { id: 5, item: 'Earphones', location: 'Kambalakkad', date: '27-Oct-2025', status: 'Lost', reportedBy: 'Niyas V' }
+        { id: 1, item: 'Water Bottle', location: 'Kolapally Bus', date: '02-Nov-2025', status: 'Lost', reportedBy: 'Rahul P', email: 'rahul@example.com', verified: false },
+        { id: 2, item: 'Umbrella', location: 'Kalpetta Stop', date: '01-Nov-2025', status: 'Found', reportedBy: 'Office', email: 'office@nilgiri.edu', verified: true },
+        { id: 3, item: 'ID Card', location: 'Kuppadi Bus', date: '30-Oct-2025', status: 'Lost', reportedBy: 'Anju M', email: 'anju@example.com', verified: false },
+        { id: 4, item: 'Notebook', location: 'Panamaram Bus', date: '28-Oct-2025', status: 'Found', reportedBy: 'Driver Rajesh', email: 'rajesh@example.com', verified: true },
+        { id: 5, item: 'Earphones', location: 'Kambalakkad', date: '27-Oct-2025', status: 'Lost', reportedBy: 'Niyas V', email: 'niyas@example.com', verified: false }
       ]
     };
     await fs.writeFile(DATA_FILE, JSON.stringify(initialData, null, 2));
@@ -556,13 +556,56 @@ app.post('/api/lost-found', async (req, res) => {
       status,
       reportedBy: name,
       email,
-      details
+      details,
+      verified: false
     };
 
     data.lostFound = data.lostFound || [];
     data.lostFound.push(newItem);
     await writeData(data);
     res.json(newItem);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Admin routes for Lost & Found
+app.put('/api/admin/lost-found/:id', authenticateToken, async (req, res) => {
+  try {
+    const { status, verified } = req.body;
+    const data = await readData();
+    const itemIndex = data.lostFound.findIndex(item => item.id === parseInt(req.params.id));
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    if (status !== undefined) {
+      data.lostFound[itemIndex].status = status;
+    }
+    if (verified !== undefined) {
+      data.lostFound[itemIndex].verified = verified;
+    }
+
+    await writeData(data);
+    res.json(data.lostFound[itemIndex]);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.delete('/api/admin/lost-found/:id', authenticateToken, async (req, res) => {
+  try {
+    const data = await readData();
+    const itemIndex = data.lostFound.findIndex(item => item.id === parseInt(req.params.id));
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    data.lostFound.splice(itemIndex, 1);
+    await writeData(data);
+    res.json({ message: 'Item deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }

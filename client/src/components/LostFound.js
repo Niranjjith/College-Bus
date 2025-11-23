@@ -128,15 +128,15 @@ const LostFound = () => {
           <tbody>
             {filteredItems.map(item => (
               <tr key={item.id}>
-                <td>{item.item}</td>
-                <td>{item.location}</td>
-                <td>{item.date}</td>
+                <td><strong style={{ color: '#333' }}>{item.item}</strong></td>
+                <td style={{ color: '#555' }}>{item.location}</td>
+                <td style={{ color: '#555' }}>{item.date}</td>
                 <td>
                   <span className={`status-badge ${item.status.toLowerCase()}`}>
                     {item.status}
                   </span>
                 </td>
-                <td>{item.reportedBy}</td>
+                <td style={{ color: '#555' }}>{item.reportedBy}</td>
               </tr>
             ))}
           </tbody>

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navRef = useRef(null);
+  const toggleRef = useRef(null);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -13,25 +15,56 @@ const Header = () => {
     setMobileMenuOpen(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        mobileMenuOpen &&
+        navRef.current &&
+        !navRef.current.contains(event.target) &&
+        toggleRef.current &&
+        !toggleRef.current.contains(event.target)
+      ) {
+        closeMobileMenu();
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <header>
       <div className="logo">
         <img src="https://nilgiricollege.ac.in/images/logo-ncas-auto.png" alt="Nilgiri College Logo" />
       </div>
-      <button className="mobile-menu-toggle" onClick={toggleMobileMenu} aria-label="Toggle menu">
+      <nav ref={navRef} className={mobileMenuOpen ? 'mobile-open' : ''}>
+        <Link to="/" onClick={closeMobileMenu}>Home</Link>
+        <Link to="/fees" onClick={closeMobileMenu}>Fees</Link>
+        <Link to="/lost-found" onClick={closeMobileMenu}>Lost & Found</Link>
+        <Link to="/admin/login" onClick={closeMobileMenu} className="admin-link">Admin</Link>
+      </nav>
+      <button 
+        ref={toggleRef}
+        className="mobile-menu-toggle" 
+        onClick={toggleMobileMenu} 
+        aria-label="Toggle menu"
+      >
         <span className={mobileMenuOpen ? 'hamburger open' : 'hamburger'}>
           <span></span>
           <span></span>
           <span></span>
         </span>
       </button>
-      <nav className={mobileMenuOpen ? 'mobile-open' : ''}>
-        <Link to="/" onClick={closeMobileMenu}>Home</Link>
-        <Link to="/fees" onClick={closeMobileMenu}>Fees</Link>
-        <Link to="/helpdesk" onClick={closeMobileMenu}>Helpdesk</Link>
-        <Link to="/lost-found" onClick={closeMobileMenu}>Lost & Found</Link>
-        <Link to="/admin/login" onClick={closeMobileMenu} className="admin-link">Admin</Link>
-      </nav>
+      {mobileMenuOpen && <div className="mobile-overlay" onClick={closeMobileMenu}></div>}
     </header>
   );
 };
