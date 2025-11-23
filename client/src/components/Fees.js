@@ -6,7 +6,7 @@ import './Fees.css';
 
 const Fees = () => {
   const [buses, setBuses] = useState([]);
-  const [selectedBus, setSelectedBus] = useState(null);
+  const [selectedBus, setSelectedBus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -24,21 +24,14 @@ const Fees = () => {
     }
   };
 
-  const handleBusClick = (bus) => {
-    const busId = bus._id || bus.id;
-    const selectedId = selectedBus?._id || selectedBus?.id;
-    setSelectedBus(selectedId === busId ? null : bus);
-    setSearchTerm('');
-    setShowSuggestions(false);
-  };
-
   const getAllRoutes = () => {
     const allRoutes = [];
     buses.forEach(bus => {
       bus.routes.forEach(route => {
         allRoutes.push({
           ...route,
-          busNo: bus.busNo
+          busNo: bus.busNo,
+          busId: bus._id || bus.id
         });
       });
     });
@@ -46,7 +39,7 @@ const Fees = () => {
   };
 
   const handleSearchChange = (e) => {
-    const value = e.target.value.toLowerCase();
+    const value = e.target.value;
     setSearchTerm(value);
 
     if (value === '') {
@@ -57,32 +50,49 @@ const Fees = () => {
     const allRoutes = getAllRoutes();
     const matches = allRoutes
       .filter(route => 
-        route.route.toLowerCase().includes(value) ||
-        route.busNo.toLowerCase().includes(value)
+        route.route.toLowerCase().includes(value.toLowerCase()) ||
+        route.busNo.toLowerCase().includes(value.toLowerCase())
       )
-      .slice(0, 10)
-      .map(route => `${route.busNo} - ${route.route}`);
+      .slice(0, 8)
+      .map(route => ({
+        display: `${route.busNo} - ${route.route}`,
+        busNo: route.busNo,
+        route: route.route,
+        busId: route.busId
+      }));
 
     setSuggestions(matches);
     setShowSuggestions(matches.length > 0);
   };
 
   const handleSuggestionClick = (suggestion) => {
-    const [busNo] = suggestion.split(' - ');
-    
-    const bus = buses.find(b => b.busNo === busNo);
+    const bus = buses.find(b => (b._id || b.id) === suggestion.busId);
     if (bus) {
-      setSelectedBus(bus);
-      setSearchTerm(suggestion);
+      setSelectedBus(bus._id || bus.id);
+      setSearchTerm(suggestion.display);
       setShowSuggestions(false);
     }
   };
 
-  const filteredRoutes = selectedBus
-    ? selectedBus.routes.filter(route =>
+  const handleBusSelect = (e) => {
+    const busId = e.target.value;
+    setSelectedBus(busId);
+    if (busId) {
+      const bus = buses.find(b => (b._id || b.id) === busId);
+      setSearchTerm(bus ? bus.busNo : '');
+    } else {
+      setSearchTerm('');
+    }
+    setShowSuggestions(false);
+  };
+
+  const selectedBusData = buses.find(b => (b._id || b.id) === selectedBus);
+  
+  const filteredRoutes = selectedBusData
+    ? selectedBusData.routes.filter(route =>
         searchTerm === '' ||
         route.route.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        selectedBus.busNo.toLowerCase().includes(searchTerm.toLowerCase())
+        selectedBusData.busNo.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : getAllRoutes().filter(route =>
         searchTerm === '' ||
@@ -93,101 +103,101 @@ const Fees = () => {
   return (
     <div className="fees-page">
       <Header />
-      <section className="container">
-        <h1>Transport Fee Structure</h1>
-        <p>Select a bus route to view details, or search by route, bus number, or driver to view fee and timing details.</p>
-
-        <div className="search-box">
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Search route or bus no..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            onFocus={() => searchTerm && setShowSuggestions(true)}
-          />
-          {showSuggestions && suggestions.length > 0 && (
-            <div className="suggestions">
-              {suggestions.map((suggestion, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                >
-                  {suggestion}
-                </div>
-              ))}
-            </div>
-          )}
+      <section className="fees-container">
+        <div className="fees-header">
+          <h1>Bus Routes & Fee Structure</h1>
+          <p>Search for routes or select a bus to view detailed information</p>
         </div>
 
-        {!selectedBus && (
-          <div className="buses-grid">
-            {buses.map(bus => (
-              <div
-                key={bus._id || bus.id}
-                className="bus-card"
-                onClick={() => handleBusClick(bus)}
-              >
-                <div className="bus-icon">🚌</div>
-                <h3>{bus.busNo}</h3>
-                <p className="route-count">{bus.routes?.length || 0} Routes Available</p>
-                <span className="click-hint">Click to view all routes →</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {selectedBus && (
-          <div className="selected-bus-view">
-            <div className="back-button" onClick={() => setSelectedBus(null)}>
-              ← Back to All Buses
-            </div>
-            <h2>{selectedBus.busNo}</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Bus No</th>
-                  <th>Route</th>
-                  <th>Fee (₹)</th>
-                  <th>Timing</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRoutes.map((route, index) => (
-                  <tr key={route._id || route.id || index}>
-                    <td><strong>{selectedBus.busNo}</strong></td>
-                    <td>{route.route}</td>
-                    <td className="fee-cell">{route.fee === 0 ? 'Free' : `₹${route.fee.toLocaleString()}`}</td>
-                    <td className="timing-cell">{route.timing}</td>
-                  </tr>
+        <div className="fees-controls">
+          <div className="search-wrapper">
+            <div className="search-icon">🔍</div>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search by route name or bus number..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              onFocus={() => searchTerm && setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="suggestions-dropdown">
+                {suggestions.map((suggestion, index) => (
+                  <div
+                    key={index}
+                    className="suggestion-item"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    <span className="suggestion-bus">{suggestion.busNo}</span>
+                    <span className="suggestion-route">{suggestion.route}</span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            )}
+          </div>
+
+          <div className="select-wrapper">
+            <select
+              className="bus-select"
+              value={selectedBus}
+              onChange={handleBusSelect}
+            >
+              <option value="">All Buses</option>
+              {buses.map(bus => (
+                <option key={bus._id || bus.id} value={bus._id || bus.id}>
+                  {bus.busNo} ({bus.routes?.length || 0} routes)
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {selectedBusData && (
+          <div className="selected-bus-info">
+            <h2>{selectedBusData.busNo}</h2>
+            <p className="route-count-badge">{selectedBusData.routes?.length || 0} Routes Available</p>
           </div>
         )}
 
-        {!selectedBus && (
-          <table>
+        <div className="table-wrapper">
+          <table className="routes-table">
             <thead>
               <tr>
                 <th>Bus No</th>
                 <th>Route</th>
-                <th>Fee (₹)</th>
+                <th>Fee</th>
                 <th>Timing</th>
               </tr>
             </thead>
             <tbody>
-              {filteredRoutes.map((route, index) => (
-                <tr key={index}>
-                  <td><strong>{route.busNo}</strong></td>
-                  <td>{route.route}</td>
-                  <td className="fee-cell">{route.fee === 0 ? 'Free' : `₹${route.fee.toLocaleString()}`}</td>
-                  <td className="timing-cell">{route.timing}</td>
+              {filteredRoutes.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="no-results">
+                    No routes found. Try a different search term or select a different bus.
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                filteredRoutes.map((route, index) => (
+                  <tr key={route._id || route.id || index}>
+                    <td className="bus-number">
+                      {selectedBusData ? selectedBusData.busNo : route.busNo}
+                    </td>
+                    <td className="route-name">{route.route}</td>
+                    <td className="fee-amount">
+                      {route.fee === 0 ? (
+                        <span className="free-badge">Free</span>
+                      ) : (
+                        `₹${route.fee.toLocaleString()}`
+                      )}
+                    </td>
+                    <td className="timing">{route.timing}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
-        )}
+        </div>
       </section>
 
       <Footer />
