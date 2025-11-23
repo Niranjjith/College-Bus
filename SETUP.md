@@ -52,7 +52,7 @@
 5. **Access the Application**
    - Open your browser and go to: http://localhost:3000
    - Admin login: http://localhost:3000/admin/login
-     - Email: nilgiritransport@gmail.com
+     - Email: admintransport@gmail.com
      - Password: 123456
 
 ## First Run
@@ -88,4 +88,5 @@ npm run build
 ```
 
 The built files will be in `client/build/`. You can serve these with any static file server or configure the Express server to serve them.
+
 

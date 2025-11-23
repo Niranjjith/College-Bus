@@ -40,11 +40,18 @@ function authenticateToken(req, res, next) {
 // Initialize default admin and buses data
 async function initializeData() {
   try {
+    // Remove old admin if exists (migration)
+    const oldAdmin = await Admin.findOne({ email: 'nilgiritransport@gmail.com' });
+    if (oldAdmin) {
+      await Admin.deleteOne({ email: 'nilgiritransport@gmail.com' });
+      console.log('🔄 Old admin removed (migration)');
+    }
+
     // Check if admin exists
-    const adminExists = await Admin.findOne({ email: 'nilgiritransport@gmail.com' });
+    const adminExists = await Admin.findOne({ email: 'admintransport@gmail.com' });
     if (!adminExists) {
       const admin = new Admin({
-        email: 'nilgiritransport@gmail.com',
+        email: 'admintransport@gmail.com',
         password: '123456' // Will be hashed by pre-save hook
       });
       await admin.save();
@@ -294,23 +301,67 @@ app.post('/api/admin/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
+    const normalizedEmail = email.toLowerCase().trim();
+    
+    // Ensure admin exists (fallback if initialization hasn't run)
+    let admin = await Admin.findOne({ email: normalizedEmail });
+    
+    if (!admin && normalizedEmail === 'admintransport@gmail.com') {
+      // Create admin if it doesn't exist (for the correct email)
+      try {
+        admin = new Admin({
+          email: 'admintransport@gmail.com',
+          password: '123456'
+        });
+        await admin.save();
+        console.log('✅ Admin created during login (fallback)');
+      } catch (createError) {
+        console.error('Error creating admin during login:', createError);
+      }
+    }
     
     if (!admin) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log(`Login attempt failed: Admin not found for email: ${normalizedEmail}`);
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     const isValid = await admin.comparePassword(password);
     
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log(`Login attempt failed: Invalid password for email: ${normalizedEmail}`);
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     const token = jwt.sign({ email: admin.email }, JWT_SECRET, { expiresIn: '24h' });
+    console.log(`✅ Successful login for: ${admin.email}`);
     res.json({ token, email: admin.email });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Utility route to create/reset admin (for debugging - remove in production)
+app.post('/api/admin/reset', async (req, res) => {
+  try {
+    // Remove old admin if exists
+    await Admin.deleteOne({ email: 'nilgiritransport@gmail.com' });
+    
+    // Remove existing admin with new email
+    await Admin.deleteOne({ email: 'admintransport@gmail.com' });
+    
+    // Create new admin
+    const admin = new Admin({
+      email: 'admintransport@gmail.com',
+      password: '123456'
+    });
+    await admin.save();
+    
+    console.log('✅ Admin reset successfully');
+    res.json({ message: 'Admin reset successfully', email: admin.email });
+  } catch (error) {
+    console.error('Error resetting admin:', error);
+    res.status(500).json({ error: 'Failed to reset admin' });
   }
 });
 

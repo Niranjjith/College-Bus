@@ -181,7 +181,7 @@ nilgiri-college-transport/
 ## 🔑 Admin Credentials
 
 **Default Login:**
-- **Email**: `nilgiritransport@gmail.com`
+- **Email**: `admintransport@gmail.com`
 - **Password**: `123456`
 
 > ⚠️ **Security Note**: Change the default password in production!
