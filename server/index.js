@@ -525,6 +525,25 @@ app.delete('/api/admin/buses/:busId/routes/:routeId', authenticateToken, async (
   }
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'College Bus Transport API is running',
+    status: 'OK',
+    version: '1.0.0',
+    endpoints: {
+      buses: '/api/buses',
+      admin: '/api/admin/login',
+      health: '/'
+    }
+  });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

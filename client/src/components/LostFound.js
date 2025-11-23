@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../config/axios';
 import Header from './Header';
 import Footer from './Footer';
 import './LostFound.css';
@@ -25,7 +25,7 @@ const LostFound = () => {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get('/api/lost-found');
+      const response = await api.get('/api/lost-found');
       setItems(response.data);
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -68,7 +68,7 @@ const LostFound = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/lost-found', formData);
+      await api.post('/api/lost-found', formData);
       setSubmitted(true);
       setFormData({ name: '', email: '', status: '', item: '', location: '', details: '' });
       fetchItems();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../config/axios';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
   const fetchBuses = async () => {
     try {
-      const response = await axios.get('/api/buses');
+      const response = await api.get('/api/buses');
       setBuses(response.data);
     } catch (error) {
       console.error('Error fetching buses:', error);
@@ -40,10 +40,7 @@ const AdminDashboard = () => {
   const handleAddBus = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.post('/api/admin/buses', busFormData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post('/api/admin/buses', busFormData);
       setBusFormData({ busNo: '', routes: [] });
       setShowBusForm(false);
       fetchBuses();
@@ -62,11 +59,8 @@ const AdminDashboard = () => {
   const handleUpdateBus = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('adminToken');
       const busId = selectedBus._id || selectedBus.id;
-      await axios.put(`/api/admin/buses/${busId}`, busFormData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.put(`/api/admin/buses/${busId}`, busFormData);
       setSelectedBus(null);
       setBusFormData({ busNo: '', routes: [] });
       setShowBusForm(false);
@@ -81,10 +75,7 @@ const AdminDashboard = () => {
     if (!window.confirm('Are you sure you want to delete this bus?')) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.delete(`/api/admin/buses/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/api/admin/buses/${id}`);
       fetchBuses();
     } catch (error) {
       console.error('Error deleting bus:', error);
@@ -112,18 +103,13 @@ const AdminDashboard = () => {
     }
     
     try {
-      const token = localStorage.getItem('adminToken');
       const busId = selectedBus._id || selectedBus.id;
       const routeId = editingRoute?._id || editingRoute?.id;
 
       if (editingRoute) {
-        await axios.put(`/api/admin/buses/${busId}/routes/${routeId}`, routeFormData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.put(`/api/admin/buses/${busId}/routes/${routeId}`, routeFormData);
       } else {
-        await axios.post(`/api/admin/buses/${busId}/routes`, routeFormData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post(`/api/admin/buses/${busId}/routes`, routeFormData);
       }
 
       setRouteFormData({ route: '', fee: '', timing: '' });
@@ -131,7 +117,7 @@ const AdminDashboard = () => {
       setEditingRoute(null);
       
       // Refresh selected bus to show updated routes
-      const updatedBuses = await axios.get('/api/buses');
+      const updatedBuses = await api.get('/api/buses');
       const selectedId = selectedBus._id || selectedBus.id;
       const updatedBus = updatedBuses.data.find(b => (b._id || b.id) === selectedId);
       if (updatedBus) {
@@ -148,13 +134,10 @@ const AdminDashboard = () => {
     if (!window.confirm('Are you sure you want to delete this route?')) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.delete(`/api/admin/buses/${busId}/routes/${routeId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/api/admin/buses/${busId}/routes/${routeId}`);
       
       // Refresh selected bus to show updated routes
-      const updatedBuses = await axios.get('/api/buses');
+      const updatedBuses = await api.get('/api/buses');
       const updatedBus = updatedBuses.data.find(b => b.id === busId);
       if (updatedBus) {
         setSelectedBus(updatedBus);
