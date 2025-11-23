@@ -14,7 +14,7 @@ const Home = () => {
           <p>Connecting students and staff with reliable, safe and modern bus services. Check routes, timings, and request help directly through our digital platform.</p>
           <div className="hero-buttons">
             <Link to="/fees" className="btn primary">View Fee Structure</Link>
-            <Link to="/lost-found" className="btn secondary">Lost & Found</Link>
+            <Link to="/fees" className="btn secondary">View Routes</Link>
           </div>
         </div>
 
@@ -51,10 +51,6 @@ const Home = () => {
         <div className="card">
           <h3>Live Timings</h3>
           <p>Stay updated with daily bus timings, changes, and instant notifications.</p>
-        </div>
-        <div className="card">
-          <h3>Lost & Found</h3>
-          <p>Report or search items lost on campus buses directly through the portal.</p>
         </div>
         <div className="card">
           <h3>Contact Office</h3>

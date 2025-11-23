@@ -8,9 +8,18 @@ header {
   position: relative;
 }
 
+.logo {
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   header {
     padding: 16px 5%;
+    justify-content: space-between;
+  }
+
+  .logo {
+    flex: 0 0 auto;
   }
 }
 
@@ -31,6 +40,9 @@ header {
   z-index: 1001;
   order: 3;
   margin-left: auto;
+  flex-shrink: 0;
+  position: relative;
+  right: 0;
 }
 
 .hamburger {
@@ -122,15 +134,23 @@ nav a:hover {
 @media (max-width: 768px) {
   header {
     padding: 16px 5%;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .logo {
-    flex: 1;
+    flex: 0 0 auto;
+    order: 1;
   }
 
   .mobile-menu-toggle {
     display: flex;
+    order: 2;
     margin-left: auto;
+    margin-right: 0;
+    position: relative;
+    right: 0;
+    padding: 10px 8px;
   }
 
   nav {
@@ -149,7 +169,8 @@ nav a:hover {
     backdrop-filter: blur(4px);
   }
 
-  nav {
+  nav.mobile-open {
+    display: flex;
     position: fixed;
     top: 0;
     right: -100%;
@@ -170,24 +191,24 @@ nav a:hover {
     right: 0;
   }
 
-  nav a {
+  nav.mobile-open a {
     width: 100%;
     padding: 16px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 18px;
   }
 
-  nav a::after {
+  nav.mobile-open a::after {
     display: none;
   }
 
-  nav a:hover {
+  nav.mobile-open a:hover {
     background: rgba(255, 255, 255, 0.1);
     padding-left: 10px;
     border-radius: 4px;
   }
 
-  .admin-link {
+  nav.mobile-open .admin-link {
     margin-top: 20px;
     text-align: center;
     background: rgba(255, 255, 255, 0.15);

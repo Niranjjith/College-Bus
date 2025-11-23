@@ -4,79 +4,106 @@ import axios from 'axios';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('nilgiritransport@gmail.com');
+  const [password, setPassword] = useState('123456');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
+
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      setError('Email and password are required');
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      const response = await axios.post('/api/admin/login', { email, password });
-      localStorage.setItem('adminToken', response.data.token);
-      localStorage.setItem('adminEmail', response.data.email);
+      const response = await axios.post('/api/admin/login', {
+        email: trimmedEmail,
+        password: trimmedPassword,
+      });
+
+      const { token, email: returnedEmail } = response.data || {};
+
+      if (!token || !returnedEmail) {
+        throw new Error('Invalid response from server');
+      }
+
+      localStorage.setItem('adminToken', token);
+      localStorage.setItem('adminEmail', returnedEmail);
+
       navigate('/admin/dashboard');
-    } catch (error) {
-      setError('Invalid email or password');
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        setError('Invalid email or password');
+      } else {
+        setError('Unable to sign in right now. Try again later.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="admin-login-page">
-      <div className="admin-logo-header">
-        <img src="https://nilgiricollege.ac.in/images/logo-ncas-auto.png" alt="Nilgiri College Logo" />
-        <span>Transport Office</span>
-      </div>
-      <div className="login-container">
+      <div className="login-wrapper">
+        <div className="login-logo">
+          <img
+            src="https://nilgiricollege.ac.in/images/logo-ncas-auto.png"
+            alt="Nilgiri College Logo"
+          />
+        </div>
+
         <div className="login-box">
           <div className="login-header">
-            <div className="admin-icon">🔐</div>
-            <h1>Admin Portal</h1>
-            <p className="subtitle">Nilgiri College Transport Office</p>
+            <h1>Admin Login</h1>
+            <p>Nilgiri College Transport Office</p>
           </div>
+
           {error && <div className="error-message">{error}</div>}
+
           <form onSubmit={handleSubmit}>
             <div className="input-group">
-              <label>Email Address</label>
+              <label htmlFor="email">Email Address</label>
               <input
+                id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
             </div>
+
             <div className="input-group">
-              <label>Password</label>
-              <div className="password-input-wrapper">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
-                </button>
-              </div>
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
             </div>
-            <button type="submit" className="login-button">
-              <span>Sign In</span>
-              <span className="arrow">→</span>
+
+            <button
+              type="submit"
+              className="login-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
-          <div className="login-footer">
-            <p>🔒 Secure Admin Access Only</p>
-          </div>
         </div>
       </div>
     </div>
@@ -84,4 +111,3 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
-

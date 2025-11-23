@@ -25,7 +25,9 @@ const Fees = () => {
   };
 
   const handleBusClick = (bus) => {
-    setSelectedBus(selectedBus?.id === bus.id ? null : bus);
+    const busId = bus._id || bus.id;
+    const selectedId = selectedBus?._id || selectedBus?.id;
+    setSelectedBus(selectedId === busId ? null : bus);
     setSearchTerm('');
     setShowSuggestions(false);
   };
@@ -122,13 +124,14 @@ const Fees = () => {
           <div className="buses-grid">
             {buses.map(bus => (
               <div
-                key={bus.id}
+                key={bus._id || bus.id}
                 className="bus-card"
                 onClick={() => handleBusClick(bus)}
               >
+                <div className="bus-icon">🚌</div>
                 <h3>{bus.busNo}</h3>
-                <p>{bus.routes.length} routes</p>
-                <span className="click-hint">Click to view routes →</span>
+                <p className="route-count">{bus.routes?.length || 0} Routes Available</p>
+                <span className="click-hint">Click to view all routes →</span>
               </div>
             ))}
           </div>
@@ -150,12 +153,12 @@ const Fees = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRoutes.map(route => (
-                  <tr key={route.id}>
-                    <td>{selectedBus.busNo}</td>
+                {filteredRoutes.map((route, index) => (
+                  <tr key={route._id || route.id || index}>
+                    <td><strong>{selectedBus.busNo}</strong></td>
                     <td>{route.route}</td>
-                    <td>{route.fee === 0 ? '-' : `₹${route.fee.toLocaleString()}`}</td>
-                    <td>{route.timing}</td>
+                    <td className="fee-cell">{route.fee === 0 ? 'Free' : `₹${route.fee.toLocaleString()}`}</td>
+                    <td className="timing-cell">{route.timing}</td>
                   </tr>
                 ))}
               </tbody>
@@ -176,10 +179,10 @@ const Fees = () => {
             <tbody>
               {filteredRoutes.map((route, index) => (
                 <tr key={index}>
-                  <td>{route.busNo}</td>
+                  <td><strong>{route.busNo}</strong></td>
                   <td>{route.route}</td>
-                  <td>{route.fee === 0 ? '-' : `₹${route.fee.toLocaleString()}`}</td>
-                  <td>{route.timing}</td>
+                  <td className="fee-cell">{route.fee === 0 ? 'Free' : `₹${route.fee.toLocaleString()}`}</td>
+                  <td className="timing-cell">{route.timing}</td>
                 </tr>
               ))}
             </tbody>

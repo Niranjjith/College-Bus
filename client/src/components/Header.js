@@ -49,7 +49,6 @@ const Header = () => {
       <nav ref={navRef} className={mobileMenuOpen ? 'mobile-open' : ''}>
         <Link to="/" onClick={closeMobileMenu}>Home</Link>
         <Link to="/fees" onClick={closeMobileMenu}>Fees</Link>
-        <Link to="/lost-found" onClick={closeMobileMenu}>Lost & Found</Link>
         <Link to="/admin/login" onClick={closeMobileMenu} className="admin-link">Admin</Link>
       </nav>
       <button 
