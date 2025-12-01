@@ -11,6 +11,15 @@ const AdminDashboard = () => {
   const [editingRoute, setEditingRoute] = useState(null);
   const [busFormData, setBusFormData] = useState({ busNo: '', routes: [] });
   const [routeFormData, setRouteFormData] = useState({ route: '', fee: '', timing: '' });
+  const [showAccountForm, setShowAccountForm] = useState(false);
+  const [accountForm, setAccountForm] = useState({
+    currentPassword: '',
+    newEmail: localStorage.getItem('adminEmail') || '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [accountStatus, setAccountStatus] = useState({ type: '', message: '' });
+  const [isUpdatingAccount, setIsUpdatingAccount] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +44,75 @@ const AdminDashboard = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminEmail');
     navigate('/admin/login');
+  };
+
+  const openAccountForm = () => {
+    setAccountStatus({ type: '', message: '' });
+    setAccountForm((prev) => ({
+      ...prev,
+      newEmail: localStorage.getItem('adminEmail') || prev.newEmail,
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    }));
+    setShowAccountForm(true);
+  };
+
+  const handleAccountSubmit = async (e) => {
+    e.preventDefault();
+    setAccountStatus({ type: '', message: '' });
+
+    if (!accountForm.currentPassword.trim()) {
+      setAccountStatus({ type: 'error', message: 'Please enter your current password.' });
+      return;
+    }
+
+    if (accountForm.newPassword && accountForm.newPassword !== accountForm.confirmPassword) {
+      setAccountStatus({ type: 'error', message: 'New passwords do not match.' });
+      return;
+    }
+
+    setIsUpdatingAccount(true);
+    try {
+      const payload = {
+        currentPassword: accountForm.currentPassword,
+      };
+
+      if (
+        accountForm.newEmail &&
+        accountForm.newEmail.trim().toLowerCase() !==
+          (localStorage.getItem('adminEmail') || '').toLowerCase()
+      ) {
+        payload.newEmail = accountForm.newEmail.trim();
+      }
+
+      if (accountForm.newPassword) {
+        payload.newPassword = accountForm.newPassword.trim();
+      }
+
+      const { data } = await api.put('/api/admin/profile/credentials', payload);
+
+      if (data?.token && data?.email) {
+        localStorage.setItem('adminToken', data.token);
+        localStorage.setItem('adminEmail', data.email);
+      }
+
+      setAccountStatus({
+        type: 'success',
+        message: 'Login details updated successfully.',
+      });
+
+      setTimeout(() => {
+        setShowAccountForm(false);
+      }, 800);
+    } catch (error) {
+      const msg =
+        error?.response?.data?.error ||
+        'Unable to update credentials. Please try again.';
+      setAccountStatus({ type: 'error', message: msg });
+    } finally {
+      setIsUpdatingAccount(false);
+    }
   };
 
   const handleAddBus = async (e) => {
@@ -163,32 +241,63 @@ const AdminDashboard = () => {
 
       <div className="dashboard-content">
         <div className="sidebar">
-              <h2>Buses</h2>
-              <button onClick={() => { setSelectedBus(null); setShowBusForm(true); setBusFormData({ busNo: '', routes: [] }); }} className="add-btn">
-                + Add New Bus
-              </button>
-              <div className="buses-list">
-                {buses.map(bus => {
-                  const busId = bus._id || bus.id;
-                  const selectedId = selectedBus?._id || selectedBus?.id;
-                  return (
-                  <div
-                    key={busId}
-                    className={`bus-item ${selectedId === busId ? 'active' : ''}`}
-                    onClick={() => setSelectedBus(bus)}
-                  >
-                    <div className="bus-item-header">
-                      <strong>{bus.busNo}</strong>
-                      <div className="bus-item-actions">
-                        <button onClick={(e) => { e.stopPropagation(); handleEditBus(bus); }} className="edit-btn">Edit</button>
-                        <button onClick={(e) => { e.stopPropagation(); handleDeleteBus(bus.id); }} className="delete-btn">Delete</button>
-                      </div>
+          <h2>Buses</h2>
+          <button
+            onClick={() => {
+              setSelectedBus(null);
+              setShowBusForm(true);
+              setBusFormData({ busNo: '', routes: [] });
+            }}
+            className="add-btn"
+          >
+            + Add New Bus
+          </button>
+          <div className="buses-list">
+            {buses.map((bus) => {
+              const busId = bus._id || bus.id;
+              const selectedId = selectedBus?._id || selectedBus?.id;
+              return (
+                <div
+                  key={busId}
+                  className={`bus-item ${selectedId === busId ? 'active' : ''}`}
+                  onClick={() => setSelectedBus(bus)}
+                >
+                  <div className="bus-item-header">
+                    <strong>{bus.busNo}</strong>
+                    <div className="bus-item-actions">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditBus(bus);
+                        }}
+                        className="edit-btn"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteBus(bus.id);
+                        }}
+                        className="delete-btn"
+                      >
+                        Delete
+                      </button>
                     </div>
-                    <span className="route-count">{bus.routes.length} routes</span>
                   </div>
-                  );
-                })}
-              </div>
+                  <span className="route-count">{bus.routes.length} routes</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="account-card">
+            <h3>Admin Account</h3>
+            <p>Update your login email and password securely.</p>
+            <button type="button" className="account-btn" onClick={openAccountForm}>
+              Change Login Details
+            </button>
+          </div>
         </div>
 
         <div className="main-content">
@@ -265,14 +374,33 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedBus.routes.map(route => (
-                    <tr key={route.id}>
+                  {selectedBus.routes.map((route) => (
+                    <tr key={route.id || route._id}>
                       <td>{route.route}</td>
                       <td>{route.fee === 0 ? '-' : `₹${route.fee.toLocaleString()}`}</td>
                       <td>{route.timing}</td>
                       <td>
-                        <button onClick={() => handleEditRoute(route)} className="edit-btn">Edit</button>
-                        <button onClick={() => handleDeleteRoute(selectedBus._id || selectedBus.id, route._id || route.id)} className="delete-btn">Delete</button>
+                        <div className="route-actions">
+                          <button
+                            type="button"
+                            onClick={() => handleEditRoute(route)}
+                            className="edit-btn"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDeleteRoute(
+                                selectedBus._id || selectedBus.id,
+                                route._id || route.id
+                              )
+                            }
+                            className="delete-btn"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -289,6 +417,74 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+
+      {showAccountForm && (
+        <div className="form-modal">
+          <div className="modal-content">
+            <h2>Update Admin Login</h2>
+            {accountStatus.message && (
+              <div
+                className={
+                  accountStatus.type === 'success'
+                    ? 'account-status success'
+                    : 'account-status error'
+                }
+              >
+                {accountStatus.message}
+              </div>
+            )}
+            <form onSubmit={handleAccountSubmit}>
+              <input
+                type="email"
+                placeholder="New email (leave as is to keep current)"
+                value={accountForm.newEmail}
+                onChange={(e) =>
+                  setAccountForm({ ...accountForm, newEmail: e.target.value })
+                }
+              />
+              <input
+                type="password"
+                placeholder="Current password (required)"
+                value={accountForm.currentPassword}
+                onChange={(e) =>
+                  setAccountForm({ ...accountForm, currentPassword: e.target.value })
+                }
+                required
+              />
+              <input
+                type="password"
+                placeholder="New password (optional)"
+                value={accountForm.newPassword}
+                onChange={(e) =>
+                  setAccountForm({ ...accountForm, newPassword: e.target.value })
+                }
+              />
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                value={accountForm.confirmPassword}
+                onChange={(e) =>
+                  setAccountForm({ ...accountForm, confirmPassword: e.target.value })
+                }
+              />
+              <div className="form-actions">
+                <button type="submit" disabled={isUpdatingAccount}>
+                  {isUpdatingAccount ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAccountForm(false);
+                    setAccountStatus({ type: '', message: '' });
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

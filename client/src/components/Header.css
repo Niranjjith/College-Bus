@@ -6,10 +6,13 @@ header {
   background: linear-gradient(90deg, var(--blue-900), var(--blue-700));
   color: var(--white);
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .logo {
   flex-shrink: 0;
+  margin-right: auto;
 }
 
 @media (max-width: 768px) {
@@ -141,6 +144,7 @@ nav a:hover {
   .logo {
     flex: 0 0 auto;
     order: 1;
+    margin-right: 0;
   }
 
   .mobile-menu-toggle {

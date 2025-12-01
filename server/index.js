@@ -341,6 +341,62 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
+// Update admin username (email) and/or password
+app.put('/api/admin/profile/credentials', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newEmail, newPassword } = req.body || {};
+
+    if (!currentPassword) {
+      return res.status(400).json({ error: 'Current password is required' });
+    }
+
+    // Find current admin from token payload
+    const currentEmail = (req.user && req.user.email) || '';
+    const admin = await Admin.findOne({ email: currentEmail.toLowerCase().trim() });
+
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    const isValid = await admin.comparePassword(currentPassword);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Update email if provided
+    if (newEmail && newEmail.trim().toLowerCase() !== admin.email.toLowerCase()) {
+      const normalizedNewEmail = newEmail.trim().toLowerCase();
+      const existing = await Admin.findOne({ email: normalizedNewEmail });
+      if (existing && existing._id.toString() !== admin._id.toString()) {
+        return res.status(400).json({ error: 'This email is already in use' });
+      }
+      admin.email = normalizedNewEmail;
+    }
+
+    // Update password if provided
+    if (newPassword && newPassword.trim().length > 0) {
+      if (newPassword.trim().length < 6) {
+        return res.status(400).json({ error: 'New password must be at least 6 characters' });
+      }
+      admin.password = newPassword.trim(); // will be hashed by pre-save hook
+    }
+
+    await admin.save();
+
+    // Issue new token with (possibly) updated email
+    const token = jwt.sign({ email: admin.email }, JWT_SECRET, { expiresIn: '24h' });
+
+    res.json({
+      message: 'Credentials updated successfully',
+      token,
+      email: admin.email,
+    });
+  } catch (error) {
+    console.error('Error updating admin credentials:', error);
+    res.status(500).json({ error: 'Failed to update credentials' });
+  }
+});
+
 // Utility route to create/reset admin (for debugging - remove in production)
 app.post('/api/admin/reset', async (req, res) => {
   try {

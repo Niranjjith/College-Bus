@@ -31,6 +31,18 @@
   margin: 0;
 }
 
+/* subtle accent under title */
+.fees-header::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 3px;
+  border-radius: 999px;
+  margin: 18px auto 0;
+  background: linear-gradient(90deg, #0b3d91, #3f8cff);
+  opacity: 0.8;
+}
+
 /* ===== Controls Section ===== */
 .fees-controls {
   display: grid;
@@ -123,6 +135,9 @@
 .suggestion-item {
   padding: 12px 16px;
   cursor: pointer;
+  width: 100%;
+  border: none;
+  background: transparent;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -182,6 +197,67 @@
   margin: 0;
 }
 
+/* ===== Route Details Card ===== */
+.route-details-card {
+  background: linear-gradient(135deg, #0b3d91, #3f8cff);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(11, 61, 145, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.route-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.route-details-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.route-details-bus {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.route-details-body {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+}
+
+.detail-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.85;
+}
+
+.detail-value {
+  font-size: 15px;
+  font-weight: 600;
+}
+
 /* ===== Table Wrapper ===== */
 .table-wrapper {
   background: #ffffff;
@@ -221,6 +297,14 @@
 
 .routes-table tbody tr:hover {
   background: #f8f9fa;
+}
+
+.route-row {
+  cursor: pointer;
+}
+
+.route-row.active {
+  background: #e7f1ff;
 }
 
 .routes-table td {

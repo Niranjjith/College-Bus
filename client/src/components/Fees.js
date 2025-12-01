@@ -10,6 +10,7 @@ const Fees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeRoute, setActiveRoute] = useState(null);
 
   useEffect(() => {
     fetchBuses();
@@ -55,10 +56,11 @@ const Fees = () => {
       )
       .slice(0, 8)
       .map(route => ({
-        display: `${route.busNo} - ${route.route}`,
+        display: `${route.busNo} • ${route.route}`,
         busNo: route.busNo,
         route: route.route,
-        busId: route.busId
+        busId: route.busId,
+        routeId: route._id || route.id
       }));
 
     setSuggestions(matches);
@@ -67,16 +69,30 @@ const Fees = () => {
 
   const handleSuggestionClick = (suggestion) => {
     const bus = buses.find(b => (b._id || b.id) === suggestion.busId);
-    if (bus) {
-      setSelectedBus(bus._id || bus.id);
-      setSearchTerm(suggestion.display);
-      setShowSuggestions(false);
-    }
+    if (!bus) return;
+
+    const route =
+      bus.routes.find(r => (r._id || r.id) === suggestion.routeId) ||
+      bus.routes.find(r => r.route === suggestion.route);
+
+    setSelectedBus(bus._id || bus.id);
+    setSearchTerm(suggestion.display);
+    setActiveRoute(
+      route
+        ? {
+            ...route,
+            busNo: bus.busNo,
+            busId: bus._id || bus.id,
+          }
+        : null
+    );
+    setShowSuggestions(false);
   };
 
   const handleBusSelect = (e) => {
     const busId = e.target.value;
     setSelectedBus(busId);
+    setActiveRoute(null);
     if (busId) {
       const bus = buses.find(b => (b._id || b.id) === busId);
       setSearchTerm(bus ? bus.busNo : '');
@@ -106,7 +122,7 @@ const Fees = () => {
       <section className="fees-container">
         <div className="fees-header">
           <h1>Bus Routes & Fee Structure</h1>
-          <p>Search for routes or select a bus to view detailed information</p>
+          <p>Search by place, route, or bus number and click a result to see full details.</p>
         </div>
 
         <div className="fees-controls">
@@ -115,7 +131,7 @@ const Fees = () => {
             <input
               type="text"
               className="search-input"
-              placeholder="Search by route name or bus number..."
+              placeholder="Search by place, route name, or bus number..."
               value={searchTerm}
               onChange={handleSearchChange}
               onFocus={() => searchTerm && setShowSuggestions(true)}
@@ -124,14 +140,15 @@ const Fees = () => {
             {showSuggestions && suggestions.length > 0 && (
               <div className="suggestions-dropdown">
                 {suggestions.map((suggestion, index) => (
-                  <div
+                  <button
+                    type="button"
                     key={index}
                     className="suggestion-item"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     <span className="suggestion-bus">{suggestion.busNo}</span>
                     <span className="suggestion-route">{suggestion.route}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
@@ -160,6 +177,31 @@ const Fees = () => {
           </div>
         )}
 
+        {activeRoute && (
+          <div className="route-details-card">
+            <div className="route-details-header">
+              <h2>{activeRoute.route}</h2>
+              <span className="route-details-bus">{activeRoute.busNo}</span>
+            </div>
+            <div className="route-details-body">
+              <div className="detail-item">
+                <span className="detail-label">Timing</span>
+                <span className="detail-value">{activeRoute.timing || '—'}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Fee</span>
+                <span className="detail-value">
+                  {activeRoute.fee === 0 ? (
+                    <span className="free-badge">Free</span>
+                  ) : (
+                    `₹${(activeRoute.fee || 0).toLocaleString()}`
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="table-wrapper">
           <table className="routes-table">
             <thead>
@@ -179,7 +221,23 @@ const Fees = () => {
                 </tr>
               ) : (
                 filteredRoutes.map((route, index) => (
-                  <tr key={route._id || route.id || index}>
+                  <tr
+                    key={route._id || route.id || index}
+                    className={
+                      activeRoute &&
+                      ((route._id && activeRoute._id && route._id === activeRoute._id) ||
+                        (route.id && activeRoute.id && route.id === activeRoute.id) ||
+                        route.route === activeRoute.route)
+                        ? 'route-row active'
+                        : 'route-row'
+                    }
+                    onClick={() =>
+                      setActiveRoute({
+                        ...route,
+                        busNo: selectedBusData ? selectedBusData.busNo : route.busNo,
+                      })
+                    }
+                  >
                     <td className="bus-number">
                       {selectedBusData ? selectedBusData.busNo : route.busNo}
                     </td>
