@@ -115,32 +115,34 @@ const LostFound = () => {
           )}
         </div>
 
-        <table id="lostTable">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Location</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Reported By</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredItems.map(item => (
-              <tr key={item.id}>
-                <td><strong style={{ color: '#333' }}>{item.item}</strong></td>
-                <td style={{ color: '#555' }}>{item.location}</td>
-                <td style={{ color: '#555' }}>{item.date}</td>
-                <td>
-                  <span className={`status-badge ${item.status.toLowerCase()}`}>
-                    {item.status}
-                  </span>
-                </td>
-                <td style={{ color: '#555' }}>{item.reportedBy}</td>
+        <div className="lost-table-wrapper">
+          <table id="lostTable">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Reported By</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredItems.map(item => (
+                <tr key={item.id}>
+                  <td><strong style={{ color: '#333' }}>{item.item}</strong></td>
+                  <td style={{ color: '#555' }}>{item.location}</td>
+                  <td style={{ color: '#555' }}>{item.date}</td>
+                  <td>
+                    <span className={`status-badge ${item.status.toLowerCase()}`}>
+                      {item.status}
+                    </span>
+                  </td>
+                  <td style={{ color: '#555' }}>{item.reportedBy}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {submitted && (
           <div className="success-message">

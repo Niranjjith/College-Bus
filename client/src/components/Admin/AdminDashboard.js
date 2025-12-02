@@ -364,48 +364,50 @@ const AdminDashboard = () => {
                 </div>
               )}
 
-              <table>
-                <thead>
-                  <tr>
-                    <th>Route</th>
-                    <th>Fee (₹)</th>
-                    <th>Timing</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedBus.routes.map((route) => (
-                    <tr key={route.id || route._id}>
-                      <td>{route.route}</td>
-                      <td>{route.fee === 0 ? '-' : `₹${route.fee.toLocaleString()}`}</td>
-                      <td>{route.timing}</td>
-                      <td>
-                        <div className="route-actions">
-                          <button
-                            type="button"
-                            onClick={() => handleEditRoute(route)}
-                            className="edit-btn"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleDeleteRoute(
-                                selectedBus._id || selectedBus.id,
-                                route._id || route.id
-                              )
-                            }
-                            className="delete-btn"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+              <div className="admin-table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Route</th>
+                      <th>Fee (₹)</th>
+                      <th>Timing</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {selectedBus.routes.map((route) => (
+                      <tr key={route.id || route._id}>
+                        <td>{route.route}</td>
+                        <td>{route.fee === 0 ? '-' : `₹${route.fee.toLocaleString()}`}</td>
+                        <td>{route.timing}</td>
+                        <td>
+                          <div className="route-actions">
+                            <button
+                              type="button"
+                              onClick={() => handleEditRoute(route)}
+                              className="edit-btn"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleDeleteRoute(
+                                  selectedBus._id || selectedBus.id,
+                                  route._id || route.id
+                                )
+                              }
+                              className="delete-btn"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 

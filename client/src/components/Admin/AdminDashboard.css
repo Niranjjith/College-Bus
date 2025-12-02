@@ -277,8 +277,15 @@
   font-weight: 600;
 }
 
-table {
+.admin-table-wrapper {
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-table-wrapper table {
+  width: 100%;
+  min-width: 640px;
   border-collapse: separate;
   border-spacing: 0;
   margin-top: 30px;
@@ -287,12 +294,12 @@ table {
   box-shadow: none;
 }
 
-thead {
+.admin-table-wrapper thead {
   background: #f3f4f6;
   color: #374151;
 }
 
-thead th {
+.admin-table-wrapper thead th {
   padding: 18px 20px;
   text-align: left;
   font-weight: 500;
@@ -302,35 +309,35 @@ thead th {
   border-bottom: 1px solid #e5e7eb;
 }
 
-tbody tr {
+.admin-table-wrapper tbody tr {
   transition: all 0.2s ease;
 }
 
-tbody td {
+.admin-table-wrapper tbody td {
   padding: 16px 20px;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
   font-size: 14px;
 }
 
-tbody tr:nth-child(even) {
+.admin-table-wrapper tbody tr:nth-child(even) {
   background: #ffffff;
 }
 
-tbody tr:hover {
+.admin-table-wrapper tbody tr:hover {
   background: #f9fafb;
 }
 
-tbody tr:last-child td:first-child {
+.admin-table-wrapper tbody tr:last-child td:first-child {
   border-bottom-left-radius: 12px;
 }
 
-tbody tr:last-child td:last-child {
+.admin-table-wrapper tbody tr:last-child td:last-child {
   border-bottom-right-radius: 12px;
 }
 
-table .edit-btn,
-table .delete-btn {
+.admin-table-wrapper table .edit-btn,
+.admin-table-wrapper table .delete-btn {
   padding: 6px 12px;
   font-size: 12px;
   border-radius: 999px;
@@ -340,8 +347,8 @@ table .delete-btn {
   cursor: pointer;
 }
 
-table .edit-btn:hover,
-table .delete-btn:hover {
+.admin-table-wrapper table .edit-btn:hover,
+.admin-table-wrapper table .delete-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
@@ -545,6 +552,10 @@ table .delete-btn:hover {
 
   .bus-details {
     padding: 25px;
+  }
+
+  .admin-table-wrapper table {
+    min-width: 520px;
   }
 }
 
